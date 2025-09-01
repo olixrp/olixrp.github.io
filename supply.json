@@ -1,4 +1,6 @@
 {
   "circulating_supply": 5900000,
-  "total_supply": 10000000
+  "total_supply": 10000000,
+  "max_supply": 10000000,
+  "last_updated": "2025-08-31"
 }
