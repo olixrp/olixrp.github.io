@@ -63,7 +63,7 @@
   @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
 
   .ticker { background: var(--blue); padding: 0.7rem 0; overflow: hidden; }
-  .ticker-track { display: flex; gap: 3rem; white-space: nowrap; animation: ticker 25s linear infinite; }
+  .ticker-track { display: flex; gap: 3rem; white-space: nowrap; animation: ticker 10s linear infinite; }
   .ticker-item { color: var(--black); font-weight: 700; font-size: 0.85rem; letter-spacing: 1px; }
   @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
@@ -277,8 +277,8 @@
     </div>
     <div class="stat-card">
       <div class="stat-icon">🖼️</div>
-      <div class="stat-num">5355</div>
-      <div class="stat-label">NFTs OLX — sold out en quelques jours</div>
+      <div class="stat-num">5,589</div>
+      <div class="stat-label">NFTs OLX mintés — sold out en quelques jours 🔥</div>
     </div>
   </div>
 </section>
@@ -481,7 +481,8 @@
     setInterval(() => moveCarousel(1), 3000);
   </script>
   <div class="nft-stats">
-    <div class="nft-stat"><div class="nft-stat-num">5355</div><div class="nft-stat-label">NFTs en circulation</div></div>
+    <div class="nft-stat"><div class="nft-stat-num">5,589</div><div class="nft-stat-label">NFTs mintés à l'origine 🔥</div></div>
+    <div class="nft-stat"><div class="nft-stat-num">5,355</div><div class="nft-stat-label">En circulation aujourd'hui</div></div>
     <div class="nft-stat"><div class="nft-stat-num">SOLD OUT</div><div class="nft-stat-label">Minté en quelques jours</div></div>
     <div class="nft-stat"><div class="nft-stat-num">3 XRP</div><div class="nft-stat-label">Floor price actuel</div></div>
   </div>
@@ -540,7 +541,17 @@
   <div class="section-label">Le créateur</div>
   <h2 class="section-title">Crypto Oli</h2>
   <div class="about-card">
-    <img src="https://raw.githubusercontent.com/olixrp/olixrp.github.io/main/OLX_XRPL_TelegramSticker_512KB.png" alt="Crypto Oli" style="width:150px;height:150px;object-fit:contain;margin-bottom:1rem;" />
+    <div style="display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+      <div style="text-align:center;">
+        <img src="https://raw.githubusercontent.com/olixrp/olixrp.github.io/main/modified_profile_updated.png" alt="Olivier - Crypto Oli" style="width:140px;height:140px;object-fit:cover;border-radius:12px;border:2px solid var(--border);" />
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem;">La vraie personne</div>
+      </div>
+      <div style="font-size:1.5rem;color:var(--muted);">→</div>
+      <div style="text-align:center;">
+        <img src="https://raw.githubusercontent.com/olixrp/olixrp.github.io/main/olx_nft_a00001.png" alt="Crypto Oli Cartoon" style="width:140px;height:140px;object-fit:contain;border-radius:12px;border:2px solid var(--blue);background:#87CEEB;" />
+        <div style="font-size:0.75rem;color:var(--blue);margin-top:0.5rem;">Le cartoon</div>
+      </div>
+    </div>
     <div class="about-name">CRYPTO OLI</div>
     <div class="about-role">Créateur de $OLX & $CFH · Trader XRP depuis 2020 · 11 000+ abonnés YouTube</div>
     <p class="about-text">
