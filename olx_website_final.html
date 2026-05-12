@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$OLX — OLIXRP | Le token XRPL qui redistribue du vrai XRP</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --dark: #111214;
+    --card: #161819;
+    --blue: #87CEEB;
+    --blue-dark: #4a9cc7;
+    --blue-glow: rgba(135,206,235,0.15);
+    --white: #f0f0f0;
+    --muted: #888;
+    --border: rgba(135,206,235,0.2);
+    --gold: #F4C542;
+    --gold-glow: rgba(244,197,66,0.15);
+    --gold-border: rgba(244,197,66,0.25);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--black); color: var(--white); overflow-x: hidden; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 3rem;
+    background: rgba(10,10,10,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--blue); letter-spacing: 2px; }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--white); }
+  .nav-cta { background: var(--blue); color: var(--black); padding: 0.6rem 1.4rem; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: opacity 0.2s; }
+  .nav-cta:hover { opacity: 0.85; }
+
+  .hero {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem 4rem; position: relative; overflow: hidden;
+  }
+  .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(135,206,235,0.08) 0%, transparent 70%); }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(135,206,235,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(135,206,235,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-tag { display: inline-block; background: var(--blue-glow); border: 1px solid var(--border); color: var(--blue); font-size: 0.8rem; font-weight: 600; padding: 0.4rem 1rem; border-radius: 20px; margin-bottom: 1.5rem; letter-spacing: 1px; text-transform: uppercase; }
+  .hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3.5rem, 10vw, 8rem); line-height: 0.95; letter-spacing: 2px; margin-bottom: 1rem; }
+  .hero h1 span { color: var(--blue); }
+  .hero-sub { font-size: clamp(1rem, 2.5vw, 1.25rem); color: var(--muted); max-width: 650px; margin: 0 auto 2.5rem; line-height: 1.7; font-weight: 300; }
+  .hero-sub strong { color: var(--white); font-weight: 500; }
+  .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn-primary { background: var(--blue); color: var(--black); padding: 0.9rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 1rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(135,206,235,0.3); }
+  .btn-secondary { background: transparent; color: var(--white); padding: 0.9rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 1rem; border: 1px solid var(--border); transition: all 0.2s; }
+  .btn-secondary:hover { border-color: var(--blue); color: var(--blue); }
+  .xrp-float { font-size: 4rem; margin-bottom: 1rem; animation: float 4s ease-in-out infinite; display: block; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+  .ticker { background: var(--blue); padding: 0.7rem 0; overflow: hidden; }
+  .ticker-track { display: flex; gap: 3rem; white-space: nowrap; animation: ticker 25s linear infinite; }
+  .ticker-item { color: var(--black); font-weight: 700; font-size: 0.85rem; letter-spacing: 1px; }
+  @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+  .section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
+  .section-dark { padding: 5rem 2rem; background: var(--dark); }
+  .section-dark .inner { max-width: 1100px; margin: 0 auto; }
+  .section-label { text-align: center; color: var(--blue); font-size: 0.8rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); text-align: center; margin-bottom: 3rem; letter-spacing: 1px; }
+
+  /* ECOSYSTEM */
+  .ecosystem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
+  .eco-card { border-radius: 16px; padding: 2.5rem; border: 1px solid; transition: transform 0.2s; }
+  .eco-card:hover { transform: translateY(-4px); }
+  .eco-card.olx { background: rgba(135,206,235,0.05); border-color: var(--border); }
+  .eco-card.cfh { background: rgba(244,197,66,0.05); border-color: var(--gold-border); }
+  .eco-token { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: 2px; margin-bottom: 0.3rem; }
+  .eco-card.olx .eco-token { color: var(--blue); }
+  .eco-card.cfh .eco-token { color: var(--gold); }
+  .eco-role { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+  .eco-perks { display: flex; flex-direction: column; gap: 0.8rem; }
+  .eco-perk { display: flex; align-items: flex-start; gap: 0.8rem; font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
+  .eco-perk-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 7px; }
+  .eco-card.olx .eco-perk-dot { background: var(--blue); }
+  .eco-card.cfh .eco-perk-dot { background: var(--gold); }
+  .eco-perk strong { color: var(--white); }
+  .eco-arrow { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .eco-flow { display: flex; align-items: center; gap: 1rem; justify-content: center; margin-top: 3rem; flex-wrap: wrap; }
+  .eco-flow-step { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.5rem; font-size: 0.85rem; color: var(--white); text-align: center; }
+  .eco-flow-arrow { color: var(--blue); font-size: 1.5rem; }
+
+  /* STATS */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; transition: transform 0.2s, border-color 0.2s; }
+  .stat-card:hover { transform: translateY(-4px); border-color: var(--blue); }
+  .stat-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; color: var(--blue); letter-spacing: 1px; line-height: 1; }
+  .stat-label { color: var(--muted); font-size: 0.85rem; margin-top: 0.4rem; }
+
+  /* HOW */
+  .steps { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 3rem; max-width: 900px; margin-left: auto; margin-right: auto; }
+  .step { display: flex; gap: 1.5rem; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem 2rem; transition: border-color 0.2s; }
+  .step:hover { border-color: var(--blue); }
+  .step-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--blue); opacity: 0.35; min-width: 3rem; line-height: 1; }
+  .step-content h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.4rem; }
+  .step-content p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+  .step-reward { display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 0.8rem; font-size: 0.8rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 20px; }
+  .step-reward.xrp { background: var(--blue-glow); color: var(--blue); border: 1px solid var(--border); }
+  .step-reward.cfh { background: var(--gold-glow); color: var(--gold); border: 1px solid var(--gold-border); }
+
+  /* FEATURES */
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+  .feature-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; transition: transform 0.2s, border-color 0.2s; }
+  .feature-card:hover { transform: translateY(-4px); border-color: var(--blue); }
+  .feature-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .feature-card h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.6rem; }
+  .feature-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+  .highlight-blue { color: var(--blue); font-weight: 600; }
+  .highlight-gold { color: var(--gold); font-weight: 600; }
+
+  /* REDISTRIBUTION */
+  .countdown-box { background: var(--card); border: 2px solid var(--blue); border-radius: 16px; padding: 3rem 2rem; margin: 3rem auto 0; max-width: 600px; text-align: center; position: relative; overflow: hidden; }
+  .countdown-box::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(135,206,235,0.07), transparent 70%); }
+  .countdown-label { color: var(--blue); font-size: 0.8rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1rem; }
+  .countdown-date { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3rem, 8vw, 5rem); color: var(--white); letter-spacing: 3px; margin-bottom: 0.5rem; }
+  .countdown-sub { color: var(--muted); font-size: 0.9rem; }
+  .redist-pills { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
+  .pill { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem 1.2rem; font-size: 0.85rem; }
+  .pill span { font-weight: 700; }
+  .pill.blue span { color: var(--blue); }
+  .pill.gold span { color: var(--gold); }
+
+  /* BUY */
+  .buy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+  .buy-section { margin-bottom: 2rem; }
+  .buy-section-title { font-size: 0.9rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+  .buy-section-title span { color: var(--blue); }
+  .buy-section-title.gold span { color: var(--gold); }
+  .buy-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.8rem; text-decoration: none; color: var(--white); transition: all 0.2s; display: block; }
+  .buy-card:hover { transform: translateY(-3px); }
+  .buy-card.featured-blue { border-color: rgba(135,206,235,0.5); background: rgba(135,206,235,0.04); }
+  .buy-card.featured-gold { border-color: rgba(244,197,66,0.4); background: rgba(244,197,66,0.04); }
+  .buy-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.7rem; border-radius: 4px; margin-bottom: 0.8rem; letter-spacing: 1px; }
+  .buy-badge.blue { background: var(--blue); color: var(--black); }
+  .buy-badge.gold { background: var(--gold); color: var(--black); }
+  .buy-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.4rem; }
+  .buy-card p { color: var(--muted); font-size: 0.85rem; margin-bottom: 1rem; line-height: 1.5; }
+  .buy-link-blue { color: var(--blue); font-size: 0.85rem; font-weight: 500; }
+  .buy-link-gold { color: var(--gold); font-size: 0.85rem; font-weight: 500; }
+
+  /* NFT */
+  .nft-stats { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin: 2rem 0; }
+  .nft-stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 2rem; text-align: center; }
+  .nft-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--blue); }
+  .nft-stat-label { color: var(--muted); font-size: 0.8rem; margin-top: 0.2rem; }
+  .nft-perks { display: flex; flex-direction: column; gap: 0.8rem; margin: 2rem 0; max-width: 600px; margin-left: auto; margin-right: auto; }
+  .nft-perk { display: flex; align-items: center; gap: 1rem; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; }
+  .nft-perk-icon { font-size: 1.3rem; }
+  .nft-perk p { font-size: 0.9rem; color: var(--muted); }
+  .nft-perk p strong { color: var(--white); }
+
+  /* ABOUT */
+  .about-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 3rem 2rem; margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto; text-align: center; }
+  .about-avatar { font-size: 5rem; margin-bottom: 1rem; }
+  .about-name { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--blue); letter-spacing: 2px; }
+  .about-role { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .about-text { color: var(--muted); font-size: 0.95rem; line-height: 1.8; max-width: 580px; margin: 0 auto 2rem; }
+  .about-text strong { color: var(--white); }
+  .commitment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; margin-top: 2rem; }
+  .commitment-item { background: var(--dark); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-size: 0.85rem; color: var(--muted); }
+  .commitment-item strong { display: block; color: var(--blue); font-size: 1rem; margin-bottom: 0.3rem; }
+
+  /* CTA */
+  .cta-final { padding: 6rem 2rem; text-align: center; background: var(--dark); position: relative; overflow: hidden; }
+  .cta-final::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(135,206,235,0.05), transparent); }
+  .cta-final h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.5rem, 7vw, 5rem); letter-spacing: 2px; margin-bottom: 1rem; position: relative; }
+  .cta-final h2 span { color: var(--blue); }
+  .cta-final p { color: var(--muted); max-width: 520px; margin: 0 auto 2.5rem; line-height: 1.6; position: relative; }
+  .social-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
+  .social-link { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--card); border: 1px solid var(--border); color: var(--muted); text-decoration: none; padding: 0.7rem 1.2rem; border-radius: 8px; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; }
+  .social-link:hover { border-color: var(--blue); color: var(--blue); }
+
+  footer { padding: 2rem; text-align: center; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; }
+  footer a { color: var(--blue); text-decoration: none; }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .ecosystem-grid { grid-template-columns: 1fr; }
+    .section, .section-dark { padding: 3rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">$OLX</div>
+  <ul class="nav-links">
+    <li><a href="#ecosysteme">Écosystème</a></li>
+    <li><a href="#comment">Comment ça marche</a></li>
+    <li><a href="#nft">NFTs</a></li>
+    <li><a href="#acheter">Acheter</a></li>
+  </ul>
+  <a href="https://horizonxrpl.com/token/OLX:rswiX7wDL25Go4wGdLJK1ssSMpUsRGosJR" target="_blank" class="nav-cta">Acheter $OLX</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div style="position:relative;z-index:1;">
+    <span class="xrp-float">✕</span>
+    <div class="hero-tag">🇫🇷 Le projet francophone du XRPL</div>
+    <h1>Le token qui<br><span>te paye</span><br>en XRP</h1>
+    <p class="hero-sub">
+      <strong>$OLX redistribue du vrai XRP à ses holders chaque 15 du mois.</strong><br>
+      Pas une promesse. Un mécanisme réel. Unique sur le XRP Ledger depuis 2025.<br>
+      Plus tu t'engages, plus tu gagnes — avec <strong style="color:var(--gold)">$CFH</strong> en bonus.
+    </p>
+    <div class="hero-btns">
+      <a href="https://horizonxrpl.com/token/OLX:rswiX7wDL25Go4wGdLJK1ssSMpUsRGosJR" target="_blank" class="btn-primary">🚀 Acheter $OLX</a>
+      <a href="https://github.com/olixrp/olixrp.github.io/blob/main/whitepaper_OLX.pdf" target="_blank" class="btn-secondary">📄 White Paper</a>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item">$OLX — REDISTRIBUTION XRP CHAQUE 15 DU MOIS</span>
+    <span class="ticker-item">✦</span>
+    <span class="ticker-item">$CFH — TOKEN D'ÉQUITÉ NUMÉRIQUE DE L'ÉCOSYSTÈME OLX</span>
+    <span class="ticker-item">✦</span>
+    <span class="ticker-item">TOKEN DEFLATIONNAIRE — SUPPLY BRÛLÉE À CHAQUE TRANSACTION</span>
+    <span class="ticker-item">✦</span>
+    <span class="ticker-item">LP BURNT + BLACKHOLED — SÉCURITÉ MAXIMALE</span>
+    <span class="ticker-item">✦</span>
+    <span class="ticker-item">LISTÉ SUR COINGECKO</span>
+    <span class="ticker-item">✦</span>
+    <span class="ticker-item">$OLX — REDISTRIBUTION XRP CHAQUE 15 DU MOIS</span>
+    <span class="ticker-item">✦</span>
+    <span class="ticker-item">$CFH — TOKEN D'ÉQUITÉ NUMÉRIQUE DE L'ÉCOSYSTÈME OLX</span>
+    <span class="ticker-item">✦</span>
+    <span class="ticker-item">TOKEN DEFLATIONNAIRE — SUPPLY BRÛLÉE À CHAQUE TRANSACTION</span>
+    <span class="ticker-item">✦</span>
+    <span class="ticker-item">LP BURNT + BLACKHOLED — SÉCURITÉ MAXIMALE</span>
+    <span class="ticker-item">✦</span>
+    <span class="ticker-item">LISTÉ SUR COINGECKO</span>
+    <span class="ticker-item">✦</span>
+  </div>
+</div>
+
+<!-- STATS -->
+<section class="section">
+  <div class="section-label">Les chiffres</div>
+  <h2 class="section-title">OLX en chiffres</h2>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-num">+2500$</div>
+      <div class="stat-label">USD redistribués en XRP depuis le lancement</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-num">520+</div>
+      <div class="stat-label">Holders $OLX actifs sur le XRPL</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔥</div>
+      <div class="stat-num">5%+</div>
+      <div class="stat-label">Supply détruite — burns auto à chaque transaction Horizon</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🖼️</div>
+      <div class="stat-num">5355</div>
+      <div class="stat-label">NFTs OLX — sold out en quelques jours</div>
+    </div>
+  </div>
+</section>
+
+<!-- ECOSYSTEME -->
+<section class="section-dark" id="ecosysteme">
+  <div class="inner">
+    <div class="section-label">Deux tokens. Un écosystème.</div>
+    <h2 class="section-title">$OLX & $CFH</h2>
+    <div class="ecosystem-grid">
+      <div class="eco-card olx">
+        <div class="eco-token">$OLX</div>
+        <div class="eco-role">Token principal · XRPL</div>
+        <div class="eco-perks">
+          <div class="eco-perk"><div class="eco-perk-dot"></div><span>Achetable sur Horizon, FirstLedger, Xmagnetix, XP Market</span></div>
+          <div class="eco-perk"><div class="eco-perk-dot"></div><span><strong>LP OLX/XRP → reçois du XRP réel chaque 15 du mois</strong></span></div>
+          <div class="eco-perk"><div class="eco-perk-dot"></div><span><strong>LP OLX/XRP → reçois 825 000 CFH/mois pendant 5 ans</strong></span></div>
+          <div class="eco-perk"><div class="eco-perk-dot"></div><span>Token deflationnaire — supply brûlée à chaque transaction</span></div>
+          <div class="eco-perk"><div class="eco-perk-dot"></div><span>LP Burnt + Blackholed — sécurité maximale prouvée</span></div>
+          <div class="eco-perk"><div class="eco-perk-dot"></div><span>Listé sur CoinGecko</span></div>
+        </div>
+      </div>
+      <div class="eco-card cfh">
+        <div class="eco-token" style="color:var(--gold)">$CFH</div>
+        <div class="eco-role">Token d'équité numérique · XRPL</div>
+        <div class="eco-perks">
+          <div class="eco-perk"><div class="eco-perk-dot"></div><span>Achetable sur Horizon et FirstLedger</span></div>
+          <div class="eco-perk"><div class="eco-perk-dot"></div><span><strong>Détenir CFH → reçois du XRP chaque 15 du mois</strong></span></div>
+          <div class="eco-perk"><div class="eco-perk-dot"></div><span>Gagné automatiquement en fournissant de la liquidité OLX/XRP</span></div>
+          <div class="eco-perk"><div class="eco-perk-dot"></div><span>825 000 CFH distribués chaque mois aux LP pendant 5 ans</span></div>
+          <div class="eco-perk"><div class="eco-perk-dot"></div><span>LP Burnt + Blackholed — même sécurité qu'OLX</span></div>
+          <div class="eco-perk"><div class="eco-perk-dot"></div><span>Acquis et intégré par Crypto Oli dans l'écosystème OLX</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="eco-flow">
+      <div class="eco-flow-step">Achète $OLX</div>
+      <div class="eco-flow-arrow">→</div>
+      <div class="eco-flow-step">LP OLX/XRP</div>
+      <div class="eco-flow-arrow">→</div>
+      <div class="eco-flow-step" style="border-color:var(--border);background:rgba(135,206,235,0.08)">XRP le 15 💰</div>
+      <div class="eco-flow-arrow" style="color:var(--gold)">+</div>
+      <div class="eco-flow-step" style="border-color:var(--gold-border);background:rgba(244,197,66,0.05)">CFH mensuel 🟡</div>
+      <div class="eco-flow-arrow" style="color:var(--gold)">→</div>
+      <div class="eco-flow-step" style="border-color:var(--gold-border);background:rgba(244,197,66,0.05)">Encore + de XRP 🔥</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section-dark" id="comment" style="background:var(--black)">
+  <div class="inner">
+    <div class="section-label">Le mécanisme</div>
+    <h2 class="section-title">Comment ça fonctionne</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h3>Tu achètes des $OLX</h3>
+          <p>Disponible sur Horizon XRPL (recommandé — burn automatique à chaque transaction), FirstLedger, Xmagnetix et XP Market. Chaque achat sur Horizon rend OLX plus rare.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h3>Tu fournis de la liquidité dans le pool OLX/XRP</h3>
+          <p>100% des revenus des ventes du JMS Indicator et du MAC System — deux outils de trading développés par Crypto Oli — sont redistribués aux liquidity providers.</p>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.8rem;">
+            <span class="step-reward xrp">💰 XRP le 15 de chaque mois</span>
+            <span class="step-reward cfh">🟡 825 000 CFH/mois pendant 5 ans</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h3>Tu détiens des $CFH — et tu gagnes encore plus</h3>
+          <p>Les CFH que tu reçois chaque mois via le LP te donnent droit à une part supplémentaire de la redistribution XRP. Plus tu accumules de CFH, plus ta part est grande.</p>
+          <span class="step-reward cfh">🟡 CFH = équité numérique dans l'écosystème OLX</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h3>Le 15 de chaque mois — du vrai XRP dans ton wallet</h3>
+          <p>Pas des tokens supplémentaires. Du vrai XRP. Automatiquement. Sans exception. +2 500$ USD redistribués depuis le lancement — la preuve que ça fonctionne.</p>
+          <span class="step-reward xrp">💰 Chaque 15 du mois, sans exception</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY OLX -->
+<section class="section" id="pourquoi">
+  <div class="section-label">Pourquoi $OLX</div>
+  <h2 class="section-title">Unique sur le XRPL</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">💎</div>
+      <h3>Double redistribution XRP</h3>
+      <p>Via $OLX ET via $CFH — <span class="highlight-blue">aucun autre projet XRPL</span> n'offre un mécanisme de double reward en XRP réel chaque mois.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔥</div>
+      <h3>Token deflationnaire</h3>
+      <p>Supply brûlée automatiquement à chaque transaction Horizon + <span class="highlight-blue">3 burns manuels</span> par Crypto Oli + 5% de la supply totale détruite. Moins de tokens = plus de valeur.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>Sécurité maximale prouvée</h3>
+      <p>LP Burnt + Blackholed sur OLX ET CFH. Crypto Oli a brûlé <span class="highlight-blue">589 XRP (~1 400$ USD)</span> au lancement. Impossible de rug pull.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🟡</div>
+      <h3>$CFH — 5 ans de rewards</h3>
+      <p><span class="highlight-gold">825 000 CFH distribués chaque mois</span> aux liquidity providers OLX pendant 5 ans. Un revenu passif qui se construit dans le temps.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🇫🇷</div>
+      <h3>Le projet XRPL francophone</h3>
+      <p>Créé par Crypto Oli, présent dans l'espace XRP depuis 2020. <span class="highlight-blue">11 000+ abonnés YouTube.</span> Communauté francophone unique sur le XRPL.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📈</div>
+      <h3>Opportunité historique</h3>
+      <p>ATH $OLX : <span class="highlight-blue">0.1488$ USD.</span> Prix actuel : 0.0065$. Le mécanisme n'a jamais cessé de fonctionner. Le comeback commence maintenant.</p>
+    </div>
+  </div>
+</section>
+
+<!-- REDISTRIBUTION -->
+<section class="section-dark">
+  <div class="inner" style="text-align:center;">
+    <div class="section-label">Chaque mois</div>
+    <h2 class="section-title">Prochaine redistribution</h2>
+    <div class="countdown-box">
+      <div class="countdown-label">📅 Prochain rendez-vous</div>
+      <div class="countdown-date">15 JUIN 2025</div>
+      <div class="countdown-sub">Détiens $OLX ou $CFH avant le 15 pour recevoir ta part en XRP</div>
+    </div>
+    <div class="redist-pills">
+      <div class="pill blue">Total redistribué : <span>+2 500$ USD en XRP</span></div>
+      <div class="pill blue">Fréquence : <span>Chaque 15 du mois</span></div>
+      <div class="pill gold">CFH distribués : <span>825 000 / mois pendant 5 ans</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- NFT -->
+<section class="section" id="nft" style="text-align:center;">
+  <div class="section-label">Collection officielle</div>
+  <h2 class="section-title">NFTs OLX</h2>
+  <div class="nft-stats">
+    <div class="nft-stat"><div class="nft-stat-num">5355</div><div class="nft-stat-label">NFTs en circulation</div></div>
+    <div class="nft-stat"><div class="nft-stat-num">SOLD OUT</div><div class="nft-stat-label">Minté en quelques jours</div></div>
+    <div class="nft-stat"><div class="nft-stat-num">3 XRP</div><div class="nft-stat-label">Floor price actuel</div></div>
+  </div>
+  <div class="nft-perks">
+    <div class="nft-perk"><div class="nft-perk-icon">🔐</div><p><strong>Accès aux salons privés Discord</strong> — Contenu exclusif réservé aux holders NFT</p></div>
+    <div class="nft-perk"><div class="nft-perk-icon">⭐</div><p><strong>Statut membre fondateur</strong> — Fais partie des premiers de l'écosystème OLX</p></div>
+    <div class="nft-perk"><div class="nft-perk-icon">🚀</div><p><strong>Avantages futurs</strong> — Accès prioritaire aux nouvelles fonctionnalités de l'écosystème</p></div>
+  </div>
+  <a href="https://xrp.cafe/collection/olx-official" target="_blank" class="btn-primary" style="display:inline-flex;margin-top:1rem;">Voir la collection sur xrp.cafe</a>
+</section>
+
+<!-- ACHETER -->
+<section class="section-dark" id="acheter">
+  <div class="inner">
+    <div class="section-label">Rejoins le projet</div>
+    <h2 class="section-title">Acheter</h2>
+
+    <div class="buy-section">
+      <div class="buy-section-title">$<span>OLX</span> — Token principal</div>
+      <div class="buy-grid">
+        <a href="https://horizonxrpl.com/token/OLX:rswiX7wDL25Go4wGdLJK1ssSMpUsRGosJR" target="_blank" class="buy-card featured-blue">
+          <div class="buy-badge blue">RECOMMANDÉ 🔥</div>
+          <h3>Horizon XRPL</h3>
+          <p>Chaque transaction brûle automatiquement des $OLX — tu contribues à la déflation du token en achetant.</p>
+          <div class="buy-link-blue">Acheter sur Horizon →</div>
+        </a>
+        <a href="https://firstledger.net/token-v2/rswiX7wDL25Go4wGdLJK1ssSMpUsRGosJR/OLX" target="_blank" class="buy-card">
+          <h3>First Ledger</h3>
+          <p>La plateforme sur laquelle $OLX a été créé et lancé le 21 mars 2025.</p>
+          <div class="buy-link-blue">Acheter sur First Ledger →</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="buy-section" style="margin-top:2rem;">
+      <div class="buy-section-title gold">$<span style="color:var(--gold)">CFH</span> — Token d'équité numérique</div>
+      <div class="buy-grid">
+        <a href="https://horizonxrpl.com/token/CFH:rDTHkzTq3Acxu6QrSLVfHrR3KadFknMkfS" target="_blank" class="buy-card featured-gold">
+          <div class="buy-badge gold">RECOMMANDÉ</div>
+          <h3>Horizon XRPL</h3>
+          <p>Achète des $CFH directement ou gagne-les en fournissant de la liquidité OLX/XRP.</p>
+          <div class="buy-link-gold">Acheter CFH sur Horizon →</div>
+        </a>
+        <a href="https://firstledger.net/token-v2/rDTHkzTq3Acxu6QrSLVfHrR3KadFknMkfS/CFH" target="_blank" class="buy-card">
+          <h3>First Ledger</h3>
+          <p>$CFH également disponible sur First Ledger avec prix et liquidité en temps réel.</p>
+          <div class="buy-link-gold">Acheter CFH sur First Ledger →</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section" style="text-align:center;">
+  <div class="section-label">Le créateur</div>
+  <h2 class="section-title">Crypto Oli</h2>
+  <div class="about-card">
+    <div class="about-avatar">🧑‍💻</div>
+    <div class="about-name">CRYPTO OLI</div>
+    <div class="about-role">Créateur de $OLX & $CFH · Trader XRP depuis 2020 · 11 000+ abonnés YouTube</div>
+    <p class="about-text">
+      J'ai créé $OLX avec une idée simple : <strong>récompenser ceux qui croient au projet avec du vrai XRP.</strong> Quelques mois plus tard, j'ai acquis et intégré $CFH pour aller encore plus loin — un deuxième niveau de récompense pour les plus engagés.
+      <br><br>
+      Le projet a connu des hauts et des bas. Je le reconnais. Mais le mécanisme n'a jamais cessé de fonctionner. Et me voilà — de retour, plus déterminé que jamais.
+    </p>
+    <div class="commitment-grid">
+      <div class="commitment-item"><strong>589 XRP brûlés</strong>~1 400$ USD au lancement</div>
+      <div class="commitment-item"><strong>35% supply OLX</strong>Wallet public vérifiable</div>
+      <div class="commitment-item"><strong>LP Burnt</strong>Impossible de rug pull</div>
+      <div class="commitment-item"><strong>Depuis 2020</strong>Communauté XRP francophone</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final">
+  <h2>Prêt à recevoir<br><span>du vrai XRP</span> ?</h2>
+  <p>Rejoins les 520+ holders qui reçoivent du XRP chaque 15 du mois. Le prochain rendez-vous est le 15 juin. $OLX + $CFH — le double reward du XRPL.</p>
+  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;position:relative;">
+    <a href="https://horizonxrpl.com/token/OLX:rswiX7wDL25Go4wGdLJK1ssSMpUsRGosJR" target="_blank" class="btn-primary" style="font-size:1rem;padding:0.9rem 2rem;">🚀 Acheter $OLX</a>
+    <a href="https://horizonxrpl.com/token/CFH:rDTHkzTq3Acxu6QrSLVfHrR3KadFknMkfS" target="_blank" class="btn-primary" style="font-size:1rem;padding:0.9rem 2rem;background:var(--gold);color:var(--black);">🟡 Acheter $CFH</a>
+  </div>
+  <div class="social-links">
+    <a href="https://discord.gg/5tTrFSZugA" target="_blank" class="social-link">💬 Discord</a>
+    <a href="https://twitter.com/Trader_Oli_Club" target="_blank" class="social-link">🐦 X / Twitter</a>
+    <a href="https://youtube.com/@OliXRP-LeProj" target="_blank" class="social-link">▶️ YouTube</a>
+    <a href="https://github.com/olixrp/olixrp.github.io/blob/main/whitepaper_OLX.pdf" target="_blank" class="social-link">📄 White Paper</a>
+  </div>
+</section>
+
+<footer>
+  <p>$OLX · $CFH · OLIXRP · Construit sur le <a href="https://xrpl.org" target="_blank">XRP Ledger</a> · Créé par <a href="https://twitter.com/Trader_Oli_Club" target="_blank">Crypto Oli</a></p>
+  <p style="margin-top:0.5rem;font-size:0.75rem;">Ceci n'est pas un conseil financier. Investissez de façon responsable.</p>
+</footer>
+
+</body>
+</html>
