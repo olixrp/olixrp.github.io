@@ -177,12 +177,12 @@
 
   /* CTA */
   .cta-final { padding: 6rem 2rem; text-align: center; background: var(--dark); position: relative; overflow: hidden; }
-  .cta-final::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(135,206,235,0.05), transparent); }
+  .cta-final::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(135,206,235,0.05), transparent); pointer-events: none; }
   .cta-final h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.5rem, 7vw, 5rem); letter-spacing: 2px; margin-bottom: 1rem; position: relative; }
   .cta-final h2 span { color: var(--blue); }
   .cta-final p { color: var(--muted); max-width: 520px; margin: 0 auto 2.5rem; line-height: 1.6; position: relative; }
-  .social-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
-  .social-link { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--card); border: 1px solid var(--border); color: var(--muted); text-decoration: none; padding: 0.7rem 1.2rem; border-radius: 8px; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; }
+  .social-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; position: relative; z-index: 10; }
+  .social-link { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--card); border: 1px solid var(--border); color: var(--muted); text-decoration: none; padding: 0.7rem 1.2rem; border-radius: 8px; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; position: relative; z-index: 10; cursor: pointer; }
   .social-link:hover { border-color: var(--blue); color: var(--blue); }
 
   footer { padding: 2rem; text-align: center; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; }
