@@ -1137,32 +1137,12 @@ async function refresh() {
     set('olx_price_usd', '$'+fmt(olxPrice*xrpUSD,6)+' USD');
   }
 
-  // APY + volume + fees — try multiple endpoints
-  var apyFetched = false;
-  var endpoints = [
-    'https://api.xrpl.to/v2/token/'+CFH_ISSUER+'/CFH',
-    'https://api.xrpl.to/v1/token/'+CFH_ISSUER+'-CFH',
-    'https://api.xrpl.to/v2/amm?asset2_currency=CFH&asset2_issuer='+CFH_ISSUER,
-  ];
-  for (var ei = 0; ei < endpoints.length; ei++) {
-    try {
-      var re = await fetchWithTimeout(endpoints[ei], {headers:{'Accept':'application/json'}}, 8000);
-      var de = await re.json();
-      var td = de && (de.token || de.data || de.amm || de);
-      if (td && typeof td === 'object') {
-        var apyVal = td.amm_apy_7d || td.apy_7d || td.apy || td.apr || null;
-        if (apyVal && !apyFetched) {
-          var apy = parseFloat(apyVal).toFixed(1)+'%';
-          set('cfh_apy', apy); set('hero_apy', apy); set('apy_big', apy);
-          apyFetched = true;
-        }
-        var vol = td.amm_volume_24h || td.volume_24h || td.vol_24h || td.volume || null;
-        if (vol && parseFloat(vol) > 0) set('cfh_vol', fmtM(parseFloat(vol))+' XRP');
-        var fees = td.amm_fees_24h || td.fees_24h || td.fee_24h || td.fees || null;
-        if (fees && parseFloat(fees) > 0) set('cfh_fees', fmtM(parseFloat(fees))+' XRP');
-      }
-    } catch(e) {}
-  }
+  // APY + volume + fees — static values updated weekly from xrpl.to
+  set('cfh_apy', '236%');
+  set('hero_apy', '236%');
+  set('apy_big', '236%');
+  set('cfh_vol', '176.6K XRP');
+  set('cfh_fees', '181.92 XRP');
 
   updateCountdown();
 }
