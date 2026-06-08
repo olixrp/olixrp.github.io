@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OLX & CFH — Live Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #04080f;
+  --bg2:     #080f1a;
+  --bg3:     #0c1523;
+  --border:  #0f2035;
+  --border2: #163050;
+  --text:    #e8f4ff;
+  --text2:   #8aadcc;
+  --text3:   #5a7a9a;
+  --cyan:    #00d4ff;
+  --green:   #00ff88;
+  --orange:  #ff8c00;
+  --yellow:  #ffd60a;
+  --red:     #ff3366;
+  --olx:     #00ff88;
+  --cfh:     #ff8c00;
+  --mono:    'JetBrains Mono', monospace;
+  --sans:    'Syne', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ── NOISE TEXTURE ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ── GRID LINES ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.3;
+}
+
+* { position: relative; z-index: 1; }
+
+/* ── GLOW ORBS ── */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+.orb-1 { width: 600px; height: 600px; background: rgba(0,212,255,0.04); top: -200px; left: -200px; }
+.orb-2 { width: 500px; height: 500px; background: rgba(255,140,0,0.04); bottom: -150px; right: -150px; }
+
+/* ── HEADER ── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 40px;
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  background: rgba(4,8,15,0.8);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo-group { display: flex; align-items: center; gap: 16px; }
+.logo-badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--cyan);
+  border: 1px solid rgba(0,212,255,0.3);
+  padding: 4px 12px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+.logo-name {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.logo-name span { color: var(--cyan); }
+
+.header-right { display: flex; align-items: center; gap: 24px; }
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--green);
+  text-transform: uppercase;
+}
+.live-dot {
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--green);
+  animation: blink 1.4s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+.xrp-price {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--yellow);
+}
+
+.nav-links { display: flex; gap: 20px; }
+.nav-link {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--text2);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.nav-link:hover { color: var(--cyan); }
+
+/* ── HERO ── */
+.hero {
+  padding: 80px 40px 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  color: var(--cyan);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s forwards;
+}
+
+.hero-title {
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.4s forwards;
+}
+.hero-title .accent { color: var(--cyan); }
+.hero-title .accent2 { color: var(--orange); }
+
+.hero-sub {
+  font-size: 16px;
+  color: var(--text2);
+  max-width: 560px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+  font-weight: 400;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s forwards;
+}
+
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s forwards;
+}
+
+.hero-stat {
+  padding: 20px 40px;
+  border: 1px solid var(--border2);
+  border-right: none;
+  text-align: center;
+}
+.hero-stat:first-child { border-radius: 4px 0 0 4px; }
+.hero-stat:last-child { border-right: 1px solid var(--border2); border-radius: 0 4px 4px 0; }
+
+.hero-stat-val {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--green);
+  display: block;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.hero-stat-val.orange { color: var(--orange); }
+.hero-stat-val.cyan   { color: var(--cyan); }
+.hero-stat-val.yellow { color: var(--yellow); }
+
+.hero-stat-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--text3);
+  text-transform: uppercase;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeUp 0.8s 1s forwards;
+}
+
+.btn-primary {
+  background: var(--cyan);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+  display: inline-block;
+}
+.btn-primary:hover { background: var(--text); transform: translateY(-1px); }
+.btn-primary.orange { background: var(--orange); }
+.btn-primary.orange:hover { background: var(--yellow); }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 14px 28px;
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+  display: inline-block;
+}
+.btn-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── SECTION ── */
+section { padding: 60px 40px; }
+.section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.section-label::after { content: ''; flex:1; height:1px; background: var(--border); }
+
+/* ── LIVE GRID ── */
+.live-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.live-card {
+  background: var(--bg2);
+  padding: 24px;
+  transition: background 0.2s;
+}
+.live-card:hover { background: var(--bg3); }
+
+.live-card-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.live-card-val {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.live-card-val.cyan   { color: var(--cyan); }
+.live-card-val.green  { color: var(--green); }
+.live-card-val.orange { color: var(--orange); }
+.live-card-val.yellow { color: var(--yellow); }
+.live-card-sub { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+
+/* ── POOL CARDS ── */
+.pool-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.pool-card {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.pool-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.pool-card.cfh::before { background: linear-gradient(90deg, var(--orange), transparent); }
+.pool-card.olx::before { background: linear-gradient(90deg, var(--green), transparent); }
+
+.pool-name {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pool-tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+.pool-tag.cfh { background: rgba(255,140,0,0.1); color: var(--orange); border: 1px solid rgba(255,140,0,0.2); }
+.pool-tag.olx { background: rgba(0,255,136,0.1); color: var(--green); border: 1px solid rgba(0,255,136,0.2); }
+
+.pool-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.pool-stat-item {}
+.pool-stat-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em; color: var(--text3); text-transform: uppercase; margin-bottom: 4px; }
+.pool-stat-val { font-family: var(--mono); font-size: 16px; font-weight: 700; }
+.pool-stat-val.orange { color: var(--orange); }
+.pool-stat-val.green  { color: var(--green); }
+.pool-stat-val.cyan   { color: var(--cyan); }
+.pool-stat-val.yellow { color: var(--yellow); }
+
+/* ── APY HIGHLIGHT ── */
+.apy-highlight {
+  background: linear-gradient(135deg, rgba(0,255,136,0.08), rgba(0,212,255,0.04));
+  border: 1px solid rgba(0,255,136,0.2);
+  border-radius: 4px;
+  padding: 32px 40px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.apy-number {
+  font-family: var(--mono);
+  font-size: 72px;
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1;
+  margin-bottom: 8px;
+  text-shadow: 0 0 40px rgba(0,255,136,0.3);
+}
+.apy-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--text2);
+  text-transform: uppercase;
+}
+
+/* ── PERFORMANCE ── */
+.perf-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.perf-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 24px;
+}
+.perf-week {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.perf-xrp {
+  font-family: var(--mono);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--cyan);
+  margin-bottom: 4px;
+}
+.perf-usd {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 12px;
+}
+.perf-detail { font-family: var(--mono); font-size: 10px; color: var(--text3); line-height: 1.8; }
+.perf-detail span { color: var(--text2); }
+
+/* ── HOW IT WORKS ── */
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.how-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 28px;
+}
+.how-option {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.how-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.how-title.green { color: var(--green); }
+.how-title.orange { color: var(--orange); }
+.how-desc { font-size: 14px; color: var(--text2); line-height: 1.7; margin-bottom: 16px; font-weight: 400; }
+.how-reward {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.reward-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+}
+.reward-tag.xrp  { background: rgba(0,212,255,0.1); color: var(--cyan); border: 1px solid rgba(0,212,255,0.2); }
+.reward-tag.cfh2 { background: rgba(255,140,0,0.1); color: var(--orange); border: 1px solid rgba(255,140,0,0.2); }
+.reward-tag.amm  { background: rgba(0,255,136,0.1); color: var(--green); border: 1px solid rgba(0,255,136,0.2); }
+
+/* ── REDISTRIBUTION ── */
+.redist-card {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+.redist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+.redist-title { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+.redist-countdown {
+  text-align: right;
+  font-family: var(--mono);
+}
+.countdown-days {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--yellow);
+  line-height: 1;
+}
+.countdown-label {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--text3);
+  text-transform: uppercase;
+}
+.redist-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.redist-stat-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em; color: var(--text3); text-transform: uppercase; margin-bottom: 4px; }
+.redist-stat-val { font-family: var(--mono); font-size: 16px; font-weight: 700; }
+.prog-bar { background: var(--bg3); border-radius: 2px; height: 6px; overflow: hidden; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, var(--orange), var(--yellow)); border-radius: 2px; transition: width 0.5s; }
+
+/* ── SOCIAL PROOF ── */
+.proof-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.proof-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 20px;
+  text-align: center;
+}
+.proof-val { font-family: var(--mono); font-size: 24px; font-weight: 700; color: var(--cyan); margin-bottom: 4px; }
+.proof-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em; color: var(--text3); text-transform: uppercase; }
+
+/* ── TRANSPARENCY ── */
+.transparency-card {
+  background: linear-gradient(135deg, rgba(0,212,255,0.04), transparent);
+  border: 1px solid rgba(0,212,255,0.15);
+  border-radius: 4px;
+  padding: 40px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.transparency-title { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px; }
+.transparency-desc { font-size: 15px; color: var(--text2); max-width: 560px; margin: 0 auto 24px; line-height: 1.7; font-weight: 400; }
+.transparency-links { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.trans-link {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text2);
+  text-decoration: none;
+  border: 1px solid var(--border2);
+  padding: 8px 16px;
+  border-radius: 2px;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.trans-link:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* ── BUY SECTION ── */
+.buy-section {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 48px 40px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.buy-title { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+.buy-sub { font-size: 14px; color: var(--text2); margin-bottom: 32px; font-weight: 400; }
+.buy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 600px; margin: 0 auto; }
+.buy-card {
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 24px;
+  text-align: left;
+}
+.buy-token { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
+.buy-token.olx { color: var(--green); }
+.buy-token.cfh { color: var(--orange); }
+.buy-desc { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-bottom: 16px; letter-spacing: 0.05em; }
+.buy-link {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  transition: color 0.2s;
+}
+.buy-link:last-child { border-bottom: none; }
+.buy-link:hover { color: var(--cyan); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-left {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  line-height: 1.8;
+}
+.footer-right { display: flex; gap: 16px; }
+.footer-link {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text3);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.footer-link:hover { color: var(--cyan); }
+
+/* ── DISCLAIMER ── */
+.disclaimer {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  text-align: center;
+  padding: 16px 40px 32px;
+  line-height: 1.7;
+  letter-spacing: 0.05em;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  header { padding: 16px 20px; }
+  .nav-links { display: none; }
+  .hero { padding: 48px 20px 40px; }
+  .hero-stats { flex-direction: column; gap: 0; }
+  .hero-stat { border-right: 1px solid var(--border2) !important; border-bottom: none; border-radius: 0 !important; }
+  .hero-stat:last-child { border-bottom: 1px solid var(--border2) !important; }
+  section { padding: 40px 20px; }
+  .live-grid, .pool-grid, .perf-grid, .how-grid, .proof-grid, .redist-stats, .buy-grid { grid-template-columns: 1fr 1fr; }
+  .apy-number { font-size: 48px; }
+  footer { flex-direction: column; gap: 16px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<header>
+  <div class="logo-group">
+    <div class="logo-badge">XRPL</div>
+    <div class="logo-name">OLX <span>&</span> CFH</div>
+  </div>
+  <div class="header-right">
+    <div class="live-indicator"><div class="live-dot"></div>Live</div>
+    <div class="xrp-price" id="hdr_xrp">XRP $—</div>
+    <nav class="nav-links">
+      <a href="#pools" class="nav-link">Pools</a>
+      <a href="#performance" class="nav-link">Performance</a>
+      <a href="#participate" class="nav-link">Participate</a>
+      <a href="#distribution" class="nav-link">Distribution</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Built on the XRP Ledger · Proprietary Trading Operations</div>
+  <h1 class="hero-title">
+    Real Yield.<br>
+    <span class="accent">On-Chain.</span><br>
+    <span class="accent2">Every 15th.</span>
+  </h1>
+  <p class="hero-sub">OLX and CFH holders receive monthly XRP + CFH distributions powered by proprietary trading operations. Every transaction publicly verifiable on-chain.</p>
+
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="hero-stat-val green" id="hero_apy">236%</span>
+      <span class="hero-stat-label">APY 7D — CFH Pool</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-val cyan" id="hero_olx_holders">—</span>
+      <span class="hero-stat-label">OLX Holders</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-val orange" id="hero_cfh_holders">—</span>
+      <span class="hero-stat-label">CFH Holders</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-val yellow">5,589</span>
+      <span class="hero-stat-label">NFTs Sold Out</span>
+    </div>
+  </div>
+
+  <div class="hero-cta">
+    <a href="https://horizonxrpl.com/token/OLX:rswiX7wDL25Go4wGdLJK1ssSMpUsRGosJR" target="_blank" class="btn-primary">Buy $OLX</a>
+    <a href="https://horizonxrpl.com/token/CFH:rDTHkzTq3Acxu6QrSLVfHrR3KadFknMkfS" target="_blank" class="btn-primary orange">Buy $CFH</a>
+    <a href="https://discord.gg/5tTrFSZugA" target="_blank" class="btn-secondary">Join Discord</a>
+  </div>
+</section>
+
+<!-- LIVE DATA -->
+<section id="pools">
+  <div class="section-label">Live Pool Data</div>
+
+  <div class="live-grid">
+    <div class="live-card">
+      <div class="live-card-label">CFH Pool — Real XRP</div>
+      <div class="live-card-val cyan" id="cfh_pool_xrp">—</div>
+      <div class="live-card-sub">AMM liquidity</div>
+    </div>
+    <div class="live-card">
+      <div class="live-card-label">OLX Pool — Real XRP</div>
+      <div class="live-card-val cyan" id="olx_pool_xrp">—</div>
+      <div class="live-card-sub">AMM liquidity</div>
+    </div>
+    <div class="live-card">
+      <div class="live-card-label">CFH Price</div>
+      <div class="live-card-val orange" id="cfh_price">—</div>
+      <div class="live-card-sub" id="cfh_price_usd">—</div>
+    </div>
+    <div class="live-card">
+      <div class="live-card-label">OLX Price</div>
+      <div class="live-card-val green" id="olx_price">—</div>
+      <div class="live-card-sub" id="olx_price_usd">—</div>
+    </div>
+  </div>
+
+  <div class="pool-grid">
+    <div class="pool-card cfh">
+      <div class="pool-name">CFH / XRP <span class="pool-tag cfh">AMM</span></div>
+      <div class="pool-stats">
+        <div class="pool-stat-item">
+          <div class="pool-stat-label">APY (7 days)</div>
+          <div class="pool-stat-val yellow" id="cfh_apy">236%</div>
+        </div>
+        <div class="pool-stat-item">
+          <div class="pool-stat-label">Volume 24H</div>
+          <div class="pool-stat-val orange" id="cfh_vol">—</div>
+        </div>
+        <div class="pool-stat-item">
+          <div class="pool-stat-label">Fees 24H</div>
+          <div class="pool-stat-val cyan" id="cfh_fees">—</div>
+        </div>
+        <div class="pool-stat-item">
+          <div class="pool-stat-label">CFH in Pool</div>
+          <div class="pool-stat-val orange" id="cfh_pool_cfh">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="pool-card olx">
+      <div class="pool-name">OLX / XRP <span class="pool-tag olx">AMM</span></div>
+      <div class="pool-stats">
+        <div class="pool-stat-item">
+          <div class="pool-stat-label">Real XRP</div>
+          <div class="pool-stat-val green" id="olx_pool_xrp2">—</div>
+        </div>
+        <div class="pool-stat-item">
+          <div class="pool-stat-label">OLX in Pool</div>
+          <div class="pool-stat-val green" id="olx_pool_olx">—</div>
+        </div>
+        <div class="pool-stat-item">
+          <div class="pool-stat-label">Circulating Supply</div>
+          <div class="pool-stat-val cyan">~9.42M</div>
+        </div>
+        <div class="pool-stat-item">
+          <div class="pool-stat-label">OLX Burned</div>
+          <div class="pool-stat-val" style="color:var(--red)">580K+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="apy-highlight">
+    <div class="apy-number" id="apy_big">236%</div>
+    <div class="apy-label">CFH/XRP Pool APY (7-day average) — Verifiable on xrpl.to</div>
+  </div>
+</section>
+
+<!-- PERFORMANCE -->
+<section id="performance">
+  <div class="section-label">Weekly Performance Reports</div>
+
+  <div class="perf-grid">
+    <div class="perf-card">
+      <div class="perf-week">Week of Jun 1–7, 2026</div>
+      <div class="perf-xrp">12,852 XRP</div>
+      <div class="perf-usd">~$14,500 USD generated</div>
+      <div class="perf-detail">
+        LP OLX injected: <span>4,041 XRP</span><br>
+        LP CFH injected: <span>5,575 XRP</span><br>
+        Avg/day: <span>~1,836 XRP</span><br>
+        Profitable: <span>7/7 days ✓</span>
+      </div>
+    </div>
+    <div class="perf-card">
+      <div class="perf-week">Week of May 25–31, 2026</div>
+      <div class="perf-xrp">3,105 XRP</div>
+      <div class="perf-usd">~$4,150 USD generated</div>
+      <div class="perf-detail">
+        LP OLX injected: <span>677 XRP</span><br>
+        LP CFH injected: <span>458 XRP</span><br>
+        Avg/day: <span>~443 XRP</span><br>
+        Profitable: <span>7/7 days ✓</span>
+      </div>
+    </div>
+    <div class="perf-card" style="opacity:0.5;">
+      <div class="perf-week">All Reports</div>
+      <div class="perf-xrp">On-Chain</div>
+      <div class="perf-usd">100% verifiable</div>
+      <div class="perf-detail">
+        Every transaction hash<br>published publicly.<br>
+        No trust required.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW TO PARTICIPATE -->
+<section id="participate">
+  <div class="section-label">How to Participate</div>
+
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="how-option">Option 01</div>
+      <div class="how-title green">CFH Holder</div>
+      <div class="how-desc">The simplest path. Buy CFH on the open market, hold it for one full month, and collect your rewards every 15th. Zero active management required.</div>
+      <div class="how-reward">
+        <span class="reward-tag xrp">XRP every 15th</span>
+        <span class="reward-tag cfh2">CFH every 15th</span>
+      </div>
+    </div>
+    <div class="how-card">
+      <div class="how-option">Option 02</div>
+      <div class="how-title orange">OLX LP Provider</div>
+      <div class="how-desc">Provide liquidity on the OLX/XRP AMM pool. Earn the same monthly XRP + CFH rewards, plus the natural advantages of AMM liquidity provision: swap fee capture and LP position growth.</div>
+      <div class="how-reward">
+        <span class="reward-tag xrp">XRP every 15th</span>
+        <span class="reward-tag cfh2">CFH every 15th</span>
+        <span class="reward-tag amm">AMM Fees</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:20px 24px;font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.05em;line-height:2;">
+    ⚠ &nbsp;Both options require holding your position for a minimum of one full month to qualify for distributions. &nbsp;|&nbsp; 
+    A 5-day grace period applies between the 15th and 20th of each month. &nbsp;|&nbsp;
+    Exiting your position during the month forfeits that month's rewards.
+  </div>
+</section>
+
+<!-- DISTRIBUTION -->
+<section id="distribution">
+  <div class="section-label">Monthly Distribution Program</div>
+
+  <div class="redist-card">
+    <div class="redist-header">
+      <div>
+        <div class="redist-title">825,000 CFH / month</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text2);margin-top:4px;">5-year program · All qualifying CFH holders &amp; OLX LP providers · Every 15th</div>
+      </div>
+      <div class="redist-countdown">
+        <div class="countdown-days" id="countdown_days">—</div>
+        <div class="countdown-label">Days until next 15th</div>
+      </div>
+    </div>
+    <div class="redist-stats">
+      <div>
+        <div class="redist-stat-label">Total Program</div>
+        <div class="redist-stat-val" style="color:var(--orange)">49.5M CFH</div>
+      </div>
+      <div>
+        <div class="redist-stat-label">Duration</div>
+        <div class="redist-stat-val" style="color:var(--yellow)">60 months</div>
+      </div>
+      <div>
+        <div class="redist-stat-label">Distributed</div>
+        <div class="redist-stat-val" style="color:var(--green)">~9.9M CFH</div>
+      </div>
+      <div>
+        <div class="redist-stat-label">Remaining</div>
+        <div class="redist-stat-val" style="color:var(--cyan)">~39.6M CFH</div>
+      </div>
+    </div>
+    <div class="prog-bar">
+      <div class="prog-fill" style="width:20%"></div>
+    </div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;letter-spacing:0.1em;">20% COMPLETE · 48 MONTHS REMAINING</div>
+  </div>
+</section>
+
+<!-- TRANSPARENCY -->
+<section>
+  <div class="section-label">Transparency</div>
+
+  <div class="transparency-card">
+    <div class="transparency-title">We Don't Ask for Trust.</div>
+    <div class="transparency-desc">Every claim is verifiable on-chain. The operations wallet address is public. Every pool injection is shared with transaction hashes. The blockchain speaks for itself.</div>
+    <div class="transparency-links">
+      <a href="https://xrpl.to" target="_blank" class="trans-link">xrpl.to</a>
+      <a href="https://discord.gg/5tTrFSZugA" target="_blank" class="trans-link">Discord</a>
+      <a href="https://twitter.com/Trader_Oli_Club" target="_blank" class="trans-link">@Trader_Oli_Club</a>
+      <a href="https://olixrp.github.io/whitepaper_OLX.pdf" target="_blank" class="trans-link">Whitepaper EN</a>
+      <a href="https://olixrp.github.io/whitepaper_OLX_FR.pdf" target="_blank" class="trans-link">Whitepaper FR</a>
+    </div>
+  </div>
+
+  <!-- SOCIAL PROOF -->
+  <div class="proof-grid">
+    <div class="proof-card">
+      <div class="proof-val" id="proof_olx">—</div>
+      <div class="proof-label">OLX Holders</div>
+    </div>
+    <div class="proof-card">
+      <div class="proof-val" style="color:var(--orange)" id="proof_cfh">—</div>
+      <div class="proof-label">CFH Holders</div>
+    </div>
+    <div class="proof-card">
+      <div class="proof-val" style="color:var(--yellow)">5,589</div>
+      <div class="proof-label">NFTs Sold Out</div>
+    </div>
+    <div class="proof-card">
+      <div class="proof-val" style="color:var(--green)">100%</div>
+      <div class="proof-label">Days Profitable</div>
+    </div>
+  </div>
+</section>
+
+<!-- BUY -->
+<section>
+  <div class="buy-section">
+    <div class="buy-title">Start Earning Today</div>
+    <div class="buy-sub">Available on horizonxrpl.com and firstledger.net</div>
+    <div class="buy-grid">
+      <div class="buy-card">
+        <div class="buy-token olx">$OLX</div>
+        <div class="buy-desc">LP on OLX/XRP → earn XRP + CFH monthly</div>
+        <a href="https://horizonxrpl.com/token/OLX:rswiX7wDL25Go4wGdLJK1ssSMpUsRGosJR" target="_blank" class="buy-link">→ Buy on horizonxrpl.com</a>
+        <a href="https://firstledger.net/token-v2/rswiX7wDL25Go4wGdLJK1ssSMpUsRGosJR/OLX" target="_blank" class="buy-link">→ Buy on firstledger.net</a>
+      </div>
+      <div class="buy-card">
+        <div class="buy-token cfh">$CFH</div>
+        <div class="buy-desc">Hold CFH → earn XRP + CFH every 15th</div>
+        <a href="https://horizonxrpl.com/token/CFH:rDTHkzTq3Acxu6QrSLVfHrR3KadFknMkfS" target="_blank" class="buy-link">→ Buy on horizonxrpl.com</a>
+        <a href="https://firstledger.net/token-v2/rDTHkzTq3Acxu6QrSLVfHrR3KadFknMkfS/CFH" target="_blank" class="buy-link">→ Buy on firstledger.net</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-left">
+    OLX &amp; CFH — Built on the XRP Ledger<br>
+    @Trader_Oli_Club · olixrp.github.io
+  </div>
+  <div class="footer-right">
+    <a href="https://discord.gg/5tTrFSZugA" target="_blank" class="footer-link">Discord</a>
+    <a href="https://twitter.com/Trader_Oli_Club" target="_blank" class="footer-link">X / Twitter</a>
+    <a href="https://olixrp.github.io/whitepaper_OLX.pdf" target="_blank" class="footer-link">Whitepaper EN</a>
+    <a href="https://olixrp.github.io/whitepaper_OLX_FR.pdf" target="_blank" class="footer-link">Whitepaper FR</a>
+    <a href="https://xrp.cafe/collection/olx-official" target="_blank" class="footer-link">NFTs</a>
+  </div>
+</footer>
+
+<div class="disclaimer">
+  This page is for informational purposes only and does not constitute financial advice. 
+  Past performance of trading operations does not guarantee future results. 
+  Participation involves risk. Always do your own research.
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+var CFH_ISSUER = 'rDTHkzTq3Acxu6QrSLVfHrR3KadFknMkfS';
+var OLX_ISSUER = 'rswiX7wDL25Go4wGdLJK1ssSMpUsRGosJR';
+var xrpUSD = 1.13;
+var XRPL_NODES = ['https://xrplcluster.com','https://s1.ripple.com:51234'];
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function fmt(n, dec) {
+  if (!n && n !== 0) return '—';
+  dec = dec === undefined ? 2 : dec;
+  return parseFloat(n).toLocaleString('en-US', {minimumFractionDigits:dec, maximumFractionDigits:dec});
+}
+function fmtM(n) {
+  if (!n && n !== 0) return '—';
+  n = parseFloat(n);
+  if (n >= 1000000000) return (n/1000000000).toFixed(2)+'B';
+  if (n >= 1000000)    return (n/1000000).toFixed(2)+'M';
+  if (n >= 1000)       return (n/1000).toFixed(1)+'K';
+  return n.toLocaleString('en-US');
+}
+function set(id, val) { var el=document.getElementById(id); if(el) el.textContent=val; }
+
+// ── FETCH ─────────────────────────────────────────────────────────────────────
+function fetchWithTimeout(url, opts, ms) {
+  return new Promise(function(res, rej) {
+    var t = setTimeout(function(){ rej(new Error('Timeout')); }, ms);
+    fetch(url, opts).then(function(r){ clearTimeout(t); res(r); }).catch(function(e){ clearTimeout(t); rej(e); });
+  });
+}
+
+async function xrplPost(method, params) {
+  for (var i=0; i<XRPL_NODES.length; i++) {
+    try {
+      var r = await fetchWithTimeout(XRPL_NODES[i], {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({method:method, params:[params]})
+      }, 9000);
+      var d = await r.json();
+      if (d.result && d.result.error) throw new Error(d.result.error);
+      return d.result;
+    } catch(e) { if(i===XRPL_NODES.length-1) throw e; }
+  }
+}
+
+async function fetchXRPPrice() {
+  try {
+    var r = await fetchWithTimeout('https://api.coingecko.com/api/v3/simple/price?ids=ripple&vs_currencies=usd', {}, 5000);
+    var d = await r.json();
+    if (d && d.ripple && d.ripple.usd) { xrpUSD = d.ripple.usd; return; }
+  } catch(e) {}
+  try {
+    var r2 = await fetchWithTimeout('https://api.binance.com/api/v3/ticker/price?symbol=XRPUSDT', {}, 5000);
+    var d2 = await r2.json();
+    if (d2 && d2.price) xrpUSD = parseFloat(d2.price);
+  } catch(e) {}
+}
+
+async function fetchHolders(issuer, currency) {
+  try {
+    var r = await fetchWithTimeout('https://s1.xrplmeta.org/token/'+currency+':'+issuer, {}, 8000);
+    var d = await r.json();
+    return d && d.metrics && d.metrics.holders ? parseInt(d.metrics.holders) : null;
+  } catch(e) { return null; }
+}
+
+async function fetchXRPLToStats() {
+  try {
+    var r = await fetchWithTimeout('https://api.xrpl.to/v2/amm/list?limit=50', {}, 8000);
+    var d = await r.json();
+    if (d && d.amms) {
+      var cfhAmm = d.amms.find(function(a) {
+        return (a.currency1 === 'CFH' || a.currency2 === 'CFH');
+      });
+      return cfhAmm || null;
+    }
+  } catch(e) {}
+  return null;
+}
+
+async function getAMM(tokenCurrency, tokenIssuer) {
+  try {
+    var r = await xrplPost('amm_info', {
+      asset:  {currency:'XRP'},
+      asset2: {currency:tokenCurrency, issuer:tokenIssuer},
+      ledger_index:'validated'
+    });
+    return r.amm;
+  } catch(e) { return null; }
+}
+
+// ── COUNTDOWN ─────────────────────────────────────────────────────────────────
+function updateCountdown() {
+  var now = new Date();
+  var next15;
+  if (now.getDate() < 15) {
+    next15 = new Date(now.getFullYear(), now.getMonth(), 15);
+  } else {
+    next15 = new Date(now.getFullYear(), now.getMonth()+1, 15);
+  }
+  var days = Math.ceil((next15 - now) / 86400000);
+  set('countdown_days', days);
+}
+
+// ── REFRESH ───────────────────────────────────────────────────────────────────
+async function refresh() {
+  await fetchXRPPrice();
+  set('hdr_xrp', 'XRP $'+fmt(xrpUSD, 4));
+
+  // Holders
+  var olxH = await fetchHolders(OLX_ISSUER, 'OLX');
+  var cfhH = await fetchHolders(CFH_ISSUER, 'CFH');
+  if (olxH) { set('hero_olx_holders', olxH.toLocaleString()); set('proof_olx', olxH.toLocaleString()); }
+  if (cfhH) { set('hero_cfh_holders', cfhH.toLocaleString()); set('proof_cfh', cfhH.toLocaleString()); }
+
+  // CFH Pool
+  var ammCFH = await getAMM('CFH', CFH_ISSUER);
+  if (ammCFH) {
+    var cfhXRP  = parseFloat(ammCFH.amount) / 1000000;
+    var cfhCFH  = parseFloat(ammCFH.amount2 ? ammCFH.amount2.value : 0);
+    var cfhPrice = cfhXRP / cfhCFH;
+    set('cfh_pool_xrp', fmt(cfhXRP,0)+' XRP');
+    set('cfh_pool_cfh', fmtM(cfhCFH)+' CFH');
+    set('cfh_price', fmt(cfhPrice,8)+' XRP');
+    set('cfh_price_usd', '$'+fmt(cfhPrice*xrpUSD,6)+' USD');
+  }
+
+  // OLX Pool
+  var ammOLX = await getAMM('OLX', OLX_ISSUER);
+  if (ammOLX) {
+    var olxXRP  = parseFloat(ammOLX.amount) / 1000000;
+    var olxOLX  = parseFloat(ammOLX.amount2 ? ammOLX.amount2.value : 0);
+    var olxPrice = olxXRP / olxOLX;
+    set('olx_pool_xrp', fmt(olxXRP,0)+' XRP');
+    set('olx_pool_xrp2', fmt(olxXRP,0)+' XRP');
+    set('olx_pool_olx', fmtM(olxOLX)+' OLX');
+    set('olx_price', fmt(olxPrice,8)+' XRP');
+    set('olx_price_usd', '$'+fmt(olxPrice*xrpUSD,6)+' USD');
+  }
+
+  // APY from xrpl.to
+  try {
+    var r = await fetchWithTimeout('https://api.xrpl.to/v1/token/'+CFH_ISSUER+'-CFH', {}, 8000);
+    var d = await r.json();
+    var td = d && (d.token || d);
+    if (td && td.amm_apy_7d) {
+      var apy = parseFloat(td.amm_apy_7d).toFixed(1)+'%';
+      set('cfh_apy', apy);
+      set('hero_apy', apy);
+      set('apy_big', apy);
+    }
+    if (td && td.amm_volume_24h) set('cfh_vol', fmtM(td.amm_volume_24h)+' XRP');
+    if (td && td.amm_fees_24h)   set('cfh_fees', fmtM(td.amm_fees_24h)+' XRP');
+  } catch(e) {}
+
+  updateCountdown();
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+updateCountdown();
+refresh();
+setInterval(refresh, 60000);
+setInterval(updateCountdown, 60000);
+</script>
+</body>
+</html>
