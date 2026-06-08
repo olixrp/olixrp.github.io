@@ -36,6 +36,8 @@
   .nav-links { display: flex; gap: 2rem; list-style: none; }
   .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
   .nav-links a:hover { color: var(--white); }
+  .nav-links a.dashboard-link { color: var(--blue); border: 1px solid rgba(135,206,235,0.3); padding: 0.3rem 0.8rem; border-radius: 4px; font-size: 0.8rem; letter-spacing: 1px; transition: all 0.2s; }
+  .nav-links a.dashboard-link:hover { background: rgba(135,206,235,0.1); color: var(--white); }
   .nav-cta { background: var(--blue); color: var(--black); padding: 0.6rem 1.4rem; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: opacity 0.2s; }
   .nav-cta:hover { opacity: 0.85; }
 
@@ -73,7 +75,6 @@
   .section-label { text-align: center; color: var(--blue); font-size: 0.8rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.5rem; }
   .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); text-align: center; margin-bottom: 3rem; letter-spacing: 1px; }
 
-  /* ECOSYSTEM */
   .ecosystem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
   .eco-card { border-radius: 16px; padding: 2.5rem; border: 1px solid; transition: transform 0.2s; }
   .eco-card:hover { transform: translateY(-4px); }
@@ -89,12 +90,10 @@
   .eco-card.olx .eco-perk-dot { background: var(--blue); }
   .eco-card.cfh .eco-perk-dot { background: var(--gold); }
   .eco-perk strong { color: var(--white); }
-  .eco-arrow { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .eco-flow { display: flex; align-items: center; gap: 1rem; justify-content: center; margin-top: 3rem; flex-wrap: wrap; }
   .eco-flow-step { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.5rem; font-size: 0.85rem; color: var(--white); text-align: center; }
   .eco-flow-arrow { color: var(--blue); font-size: 1.5rem; }
 
-  /* STATS */
   .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
   .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; transition: transform 0.2s, border-color 0.2s; }
   .stat-card:hover { transform: translateY(-4px); border-color: var(--blue); }
@@ -102,7 +101,6 @@
   .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; color: var(--blue); letter-spacing: 1px; line-height: 1; }
   .stat-label { color: var(--muted); font-size: 0.85rem; margin-top: 0.4rem; }
 
-  /* HOW */
   .steps { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 3rem; max-width: 900px; margin-left: auto; margin-right: auto; }
   .step { display: flex; gap: 1.5rem; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem 2rem; transition: border-color 0.2s; }
   .step:hover { border-color: var(--blue); }
@@ -113,7 +111,6 @@
   .step-reward.xrp { background: var(--blue-glow); color: var(--blue); border: 1px solid var(--border); }
   .step-reward.cfh { background: var(--gold-glow); color: var(--gold); border: 1px solid var(--gold-border); }
 
-  /* FEATURES */
   .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
   .feature-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; transition: transform 0.2s, border-color 0.2s; }
   .feature-card:hover { transform: translateY(-4px); border-color: var(--blue); }
@@ -123,7 +120,6 @@
   .highlight-blue { color: var(--blue); font-weight: 600; }
   .highlight-gold { color: var(--gold); font-weight: 600; }
 
-  /* REDISTRIBUTION */
   .countdown-box { background: var(--card); border: 2px solid var(--blue); border-radius: 16px; padding: 3rem 2rem; margin: 3rem auto 0; max-width: 600px; text-align: center; position: relative; overflow: hidden; }
   .countdown-box::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(135,206,235,0.07), transparent 70%); }
   .countdown-label { color: var(--blue); font-size: 0.8rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1rem; }
@@ -135,7 +131,6 @@
   .pill.blue span { color: var(--blue); }
   .pill.gold span { color: var(--gold); }
 
-  /* BUY */
   .buy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
   .buy-section { margin-bottom: 2rem; }
   .buy-section-title { font-size: 0.9rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
@@ -153,7 +148,6 @@
   .buy-link-blue { color: var(--blue); font-size: 0.85rem; font-weight: 500; }
   .buy-link-gold { color: var(--gold); font-size: 0.85rem; font-weight: 500; }
 
-  /* NFT */
   .nft-stats { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin: 2rem 0; }
   .nft-stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 2rem; text-align: center; }
   .nft-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--blue); }
@@ -164,9 +158,7 @@
   .nft-perk p { font-size: 0.9rem; color: var(--muted); }
   .nft-perk p strong { color: var(--white); }
 
-  /* ABOUT */
   .about-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 3rem 2rem; margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto; text-align: center; }
-  .about-avatar { font-size: 5rem; margin-bottom: 1rem; }
   .about-name { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--blue); letter-spacing: 2px; }
   .about-role { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
   .about-text { color: var(--muted); font-size: 0.95rem; line-height: 1.8; max-width: 580px; margin: 0 auto 2rem; }
@@ -175,7 +167,6 @@
   .commitment-item { background: var(--dark); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-size: 0.85rem; color: var(--muted); }
   .commitment-item strong { display: block; color: var(--blue); font-size: 1rem; margin-bottom: 0.3rem; }
 
-  /* CTA */
   .cta-final { padding: 6rem 2rem; text-align: center; background: var(--dark); position: relative; overflow: hidden; }
   .cta-final::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(135,206,235,0.05), transparent); pointer-events: none; }
   .cta-final h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.5rem, 7vw, 5rem); letter-spacing: 2px; margin-bottom: 1rem; position: relative; }
@@ -205,6 +196,7 @@
     <li><a href="#comment">Comment ça marche</a></li>
     <li><a href="#nft">NFTs</a></li>
     <li><a href="#acheter">Acheter</a></li>
+    <li><a href="https://olixrp.github.io/dashboard" target="_blank" class="dashboard-link">📊 Dashboard</a></li>
   </ul>
   <a href="https://horizonxrpl.com/token/OLX:rswiX7wDL25Go4wGdLJK1ssSMpUsRGosJR" target="_blank" class="nav-cta">Acheter $OLX</a>
 </nav>
@@ -224,7 +216,7 @@
     </p>
     <div class="hero-btns">
       <a href="https://horizonxrpl.com/token/OLX:rswiX7wDL25Go4wGdLJK1ssSMpUsRGosJR" target="_blank" class="btn-primary">🚀 Acheter $OLX</a>
-      <a href="https://github.com/olixrp/olixrp.github.io/blob/main/whitepaper_OLX.pdf" target="_blank" class="btn-secondary">📄 White Paper</a>
+      <a href="https://olixrp.github.io/whitepaper_OLX.pdf" target="_blank" class="btn-secondary">📄 White Paper</a>
     </div>
   </div>
 </section>
@@ -345,7 +337,7 @@
         <div class="step-num">02</div>
         <div class="step-content">
           <h3>Tu fournis de la liquidité dans le pool OLX/XRP</h3>
-          <p>100% des revenus des ventes du JMS Indicator et du MAC System — deux outils de trading développés par Crypto Oli — sont redistribués aux liquidity providers.</p>
+          <p>En fournissant de la liquidité dans le pool OLX/XRP, tu deviens éligible aux distributions mensuelles de XRP et de CFH générées par les opérations de trading de l'écosystème.</p>
           <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.8rem;">
             <span class="step-reward xrp">💰 XRP le 15 de chaque mois</span>
             <span class="step-reward cfh">🟡 825 000 CFH/mois pendant 5 ans</span>
@@ -432,11 +424,10 @@
 <section class="section" id="nft" style="text-align:center;">
   <div class="section-label">Collection officielle</div>
   <h2 class="section-title">NFTs OLX</h2>
-  <img src="https://raw.githubusercontent.com/olixrp/olixrp.github.io/main/Capture%20d%E2%80%99%C3%A9cran%202026-05-12%20140835.jpg" alt="Revenge trade incoming" style="width:220px;height:auto;border-radius:12px;border:1px solid var(--border);margin-bottom:2rem;display:none;" />
 
-  <!-- CAROUSEL NFT -->
   <div style="position:relative;overflow:hidden;width:100%;max-width:900px;margin:0 auto 2rem;">
-    <div id="nft-carousel" style="display:flex;gap:16px;transition:transform 0.5s ease;will-change:transform;">      <div class="nft-slide"><img src="https://raw.githubusercontent.com/olixrp/olixrp.github.io/main/Capture%20d%E2%80%99%C3%A9cran%202026-05-12%20140835.jpg" alt="NFT" /><div class="nft-slide-label">🔥 Rare</div></div>
+    <div id="nft-carousel" style="display:flex;gap:16px;transition:transform 0.5s ease;will-change:transform;">
+      <div class="nft-slide"><img src="https://raw.githubusercontent.com/olixrp/olixrp.github.io/main/Capture%20d%E2%80%99%C3%A9cran%202026-05-12%20140835.jpg" alt="NFT" /><div class="nft-slide-label">🔥 Rare</div></div>
       <div class="nft-slide"><img src="https://raw.githubusercontent.com/olixrp/olixrp.github.io/main/Capture%20d%E2%80%99%C3%A9cran%202026-05-12%20151927.jpg" alt="NFT" /><div class="nft-slide-label">🔥 Rare</div></div>
       <div class="nft-slide"><img src="https://raw.githubusercontent.com/olixrp/olixrp.github.io/main/Capture%20d%E2%80%99%C3%A9cran%202026-05-12%20145947.jpg" alt="NFT" /><div class="nft-slide-label">🔥 Rare</div></div>
       <div class="nft-slide"><img src="https://raw.githubusercontent.com/olixrp/olixrp.github.io/main/Capture%20d%E2%80%99%C3%A9cran%202026-05-12%20165940.jpg" alt="NFT Rare" /><div class="nft-slide-label">🔥 Rare</div></div>
@@ -449,13 +440,12 @@
       <div class="nft-slide"><img src="https://raw.githubusercontent.com/olixrp/olixrp.github.io/main/Capture%20d%E2%80%99%C3%A9cran%202026-05-12%20152004.jpg" alt="NFT" /><div class="nft-slide-label">🔥 Rare</div></div>
       <div class="nft-slide"><img src="https://raw.githubusercontent.com/olixrp/olixrp.github.io/main/Capture%20d%E2%80%99%C3%A9cran%202026-05-12%20151946.jpg" alt="NFT" /><div class="nft-slide-label">🔥 Rare</div></div>
       <div class="nft-slide"><img src="https://raw.githubusercontent.com/olixrp/olixrp.github.io/main/Capture%20d%E2%80%99%C3%A9cran%202026-05-12%20150115.jpg" alt="NFT" /><div class="nft-slide-label">🔥 Rare</div></div>
-      <!-- Duplicates pour loop infini -->
       <div class="nft-slide"><img src="https://raw.githubusercontent.com/olixrp/olixrp.github.io/main/olx_nft_a00001.png" alt="NFT" /><div class="nft-slide-label">👑 Rarity 1/5355</div></div>
       <div class="nft-slide"><img src="https://raw.githubusercontent.com/olixrp/olixrp.github.io/main/Capture%20d%E2%80%99%C3%A9cran%202026-05-12%20140835.jpg" alt="NFT" /><div class="nft-slide-label">🔥 Rare</div></div>
       <div class="nft-slide"><img src="https://raw.githubusercontent.com/olixrp/olixrp.github.io/main/Capture%20d%E2%80%99%C3%A9cran%202026-05-12%20150045.jpg" alt="NFT" /><div class="nft-slide-label">🔥 Rare</div></div>
     </div>
-    <button onclick="moveCarousel(-1)" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.7);border:1px solid var(--border);color:var(--white);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;z-index:10;">‹</button>
-    <button onclick="moveCarousel(1)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.7);border:1px solid var(--border);color:var(--white);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;z-index:10;">›</button>
+    <button onclick="moveCarousel(-1)" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.7);border:1px solid var(--border);color:var(--white);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;z-index:10;">&#8249;</button>
+    <button onclick="moveCarousel(1)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.7);border:1px solid var(--border);color:var(--white);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;z-index:10;">&#8250;</button>
   </div>
 
   <style>
@@ -477,9 +467,9 @@
       if(carouselPos < 0) carouselPos = total - 1;
       carousel.style.transform = `translateX(-${carouselPos * slideWidth()}px)`;
     }
-    // Auto-scroll
     setInterval(() => moveCarousel(1), 3000);
   </script>
+
   <div class="nft-stats">
     <div class="nft-stat"><div class="nft-stat-num">5,589</div><div class="nft-stat-label">NFTs mintés à l'origine 🔥</div></div>
     <div class="nft-stat"><div class="nft-stat-num">5,355</div><div class="nft-stat-label">En circulation aujourd'hui</div></div>
@@ -499,7 +489,6 @@
   <div class="inner">
     <div class="section-label">Rejoins le projet</div>
     <h2 class="section-title">Acheter</h2>
-
     <div class="buy-section">
       <div class="buy-section-title">$<span>OLX</span> — Token principal</div>
       <div class="buy-grid">
@@ -516,7 +505,6 @@
         </a>
       </div>
     </div>
-
     <div class="buy-section" style="margin-top:2rem;">
       <div class="buy-section-title gold">$<span style="color:var(--gold)">CFH</span> — Token d'équité numérique</div>
       <div class="buy-grid">
@@ -581,7 +569,8 @@
     <a href="https://discord.gg/5tTrFSZugA" target="_blank" class="social-link">💬 Discord</a>
     <a href="https://twitter.com/Trader_Oli_Club" target="_blank" class="social-link">🐦 X / Twitter</a>
     <a href="https://www.youtube.com/@Crypto_Oli" target="_blank" class="social-link">▶️ YouTube</a>
-    <a href="https://github.com/olixrp/olixrp.github.io/blob/main/whitepaper_OLX.pdf" target="_blank" class="social-link">📄 White Paper</a>
+    <a href="https://olixrp.github.io/whitepaper_OLX.pdf" target="_blank" class="social-link">📄 White Paper</a>
+    <a href="https://olixrp.github.io/dashboard" target="_blank" class="social-link">📊 Dashboard</a>
   </div>
 </section>
 
